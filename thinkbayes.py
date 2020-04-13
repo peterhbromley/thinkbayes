@@ -552,6 +552,11 @@ class PMF(_DictWrapper):
         cdf.ps = [p ** k for p in cdf.ps]
         return cdf
 
+    def XY(self):
+        xs = sorted(self.Values())
+        ys = self.Probs(xs)
+        return xs, ys
+
 
 class Joint(PMF):
     """Represents a joint distribution.
@@ -1410,6 +1415,29 @@ def SampleSum(dists, n):
     return pmf
 
 
+def RandomMax(dists):
+    """Chooses a random value from each dist and returns the max.
+
+    dists: sequence of PMF or CDF objects
+
+    returns: numerical max
+    """
+    total = max(dist.Random() for dist in dists)
+    return total
+
+
+def SampleMax(dists, n):
+    """Draws a sample of maxes from a list of distributions.
+
+    dists: sequence of PMF or CDF objects
+    n: sample size
+
+    returns: new PMF of maxes
+    """
+    pmf = MakePMFFromList(RandomMax(dists) for i in range(n))
+    return pmf
+
+
 def EvalGaussianPdf(x, mu, sigma):
     """Computes the unnormalized PDF of the normal distribution.
 
@@ -1744,4 +1772,3 @@ def LogBinomialCoef(n, k):
     Returns: float
     """
     return n * log(n) - k * log(k) - (n - k) * log(n - k)
-
